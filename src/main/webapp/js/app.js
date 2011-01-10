@@ -29,7 +29,7 @@
     pollForm: '<div><form id="new-poll" action="#" method="POST">\
       <h3>Get something out of your community</h3>\
       <input type="hidden" name="group-urlname" value="{{urlname}}">\
-      <ul>\
+      <ul id="fields">\
         <li>\
           <label for="name">What do you want to call this poll?</label>\
           <span><input name="name" type="text" /></span>\
@@ -49,7 +49,8 @@
       <a href="#add-option" id="add-option">Add an option</a>\
       <div class="hint">you can always edit these later</div>\
       <div><input type="submit" class="btn" value="Create this poll"/> or <a href="" id="cancel-new-poll">Maybe later</a></div>\
-   </form></div>'
+   </form></div>',
+      newOption: '<li><textarea class="option" name="option"/></li>'
   }, render = function(view, data) {
       return Mustache.to_html(view, data);
   }, urlFragment = function() {
@@ -83,6 +84,11 @@
                 e.preventDefault();
                 showGroup(group);
                 return false;
+              });
+              $("#add-option").live('click', function(e) {
+                 e.preventDefault();
+                  $("#fields").append(Templates.newOption);
+                 return false;
               });
               /*
               $("#group-search").focus(function(e) {

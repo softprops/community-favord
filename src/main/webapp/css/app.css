@@ -38,6 +38,8 @@ header h1 {
   display:inline;
 }
 
+.option { width:100%; }
+
 h1, h2, h3 { margin-bottom:.25em; color:#333;  font-family: 'Arvo', "Helvetica Neue", Helvetica, Arial, sans-serif; }
 
 ul, li { list-style:none; }
