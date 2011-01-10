@@ -64,7 +64,7 @@ class App extends unfiltered.filter.Plan {
 
 
     case GET(Path("/connect")) & request =>
-      val callback = "%s/authenciated" format(host)
+      val callback = "%s/authenticated" format(host)
       val t = http(Auth.request_token(consumer, callback))
       ResponseCookies(
         Cookie("token", ClientToken(t.value, t.secret, None).toCookieString)) ~>
@@ -73,7 +73,7 @@ class App extends unfiltered.filter.Plan {
     case GET(Path("/disconnect")) & request =>
       ResponseCookies(Cookie("token", "")) ~> Redirect("/")
 
-    case GET(Path("/authenciated") & Params(params)) & request =>
+    case GET(Path("/authenticated") & Params(params)) & request =>
       val expected = for {
         verifier <- lookup("oauth_verifier") is
           required("verifier is required") is
