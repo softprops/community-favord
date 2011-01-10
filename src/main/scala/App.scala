@@ -68,7 +68,7 @@ class App extends unfiltered.filter.Plan {
       val t = http(Auth.request_token(consumer, callback))
       ResponseCookies(
         Cookie("token", ClientToken(t.value, t.secret, None).toCookieString)) ~>
-          Redirect(Auth.authorize_url(t).to_uri.toString)
+          Redirect(Auth.authenticate_url(t).to_uri.toString)
 
     case GET(Path("/disconnect")) & request =>
       ResponseCookies(Cookie("token", "")) ~> Redirect("/")
