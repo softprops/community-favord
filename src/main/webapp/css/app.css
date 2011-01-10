@@ -2,6 +2,10 @@
 
 article, aside, figure, footer, header, hgroup, menu, nav, section { display: block; }
 
+html, body {
+  height:100%;
+}
+
 body {
   background: #FFFEEE;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFFEEE', endColorstr='#fffff');
@@ -9,11 +13,15 @@ body {
   background: -moz-linear-gradient(top,  #FFFEEE,  #ffffff);
 }
 
-body, input, texarea {
+body, input, textarea {
   color:#aaaaaa;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size:18px;
   line-height:1.5em;
+}
+
+input[type='text']:focus, textarea:focus {
+  color:#333;
 }
 
 header {
@@ -30,7 +38,7 @@ header h1 {
   display:inline;
 }
 
-h1, h2, h3 { color:#333;  font-family: 'Arvo', "Helvetica Neue", Helvetica, Arial, sans-serif; }
+h1, h2, h3 { margin-bottom:.25em; color:#333;  font-family: 'Arvo', "Helvetica Neue", Helvetica, Arial, sans-serif; }
 
 ul, li { list-style:none; }
 
@@ -42,34 +50,36 @@ a:link, a:visited {
 a:hover {
   color:#E0A2BD;
 }
-
+a#home { color:#fff; }
 #container {
   width:960px;
   margin:1em auto;
 }
 
 .btn {
-  -webkit-transition: background .5s linear;
-  transition: background .5s linear;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
   background: #EB7FD9;
+  border:1px solid rgba(204,204,204);
+  border:1px solid rgba(204,204,204,0.75);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#EB7FD9', endColorstr='#C427A9');
   background: -webkit-gradient(linear, left top, left bottom, from(#EB7FD9), to(#C427A9));
   background: -moz-linear-gradient(top,  #EB7FD9,  #C427A9);
   color:#ffffff;
-  padding:.25em .5em;
+  padding:.15em .25em;
   text-shadow: #333 0 0 2px;
+   -webkit-transition: background .5s linear;
+  transition: background .5s linear;
 }
 
 .btn:hover {
-  -webkit-transition: background .5s linear;
-  transition: background .5s linear;
   background: #C427A9;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#C427A9', endColorstr='#EB7FD9');
   background: -webkit-gradient(linear, left top, left bottom, from(#C427A9), to(#EB7FD9));
   background: -moz-linear-gradient(top,  #C427A9,  #EB7FD9);
+  -webkit-transition: background .5s linear;
+  transition: background .5s linear;
 }
 
 a.btn:link, a.btn:visited {
@@ -92,7 +102,12 @@ input[type='text'], textarea {
   transition: background .5s linear;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
-  border:1px solid #ccc:
+  border:5px solid #eee;
+  padding:.25em;
+}
+
+#create {
+  margin:.5em 0;
 }
 
 #new-poll li {
@@ -103,6 +118,11 @@ input[type='text'], textarea {
   float:left;
   width:280px;
   display:block;
+  margin-top:.5em;
+}
+
+#new-poll .hint {
+  font-size:smaller;
 }
 
 #new-poll li span {
@@ -111,4 +131,9 @@ input[type='text'], textarea {
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   padding:.25em;
+}
+
+#polls {
+  margin-top:1em;
+  border-top:2px solid #ddd;
 }

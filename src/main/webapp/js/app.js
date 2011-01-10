@@ -7,32 +7,48 @@
 
   var Templates = {
     user : '<div>\
-      <div>{{name}} <a href="/disconnect">Sign out</a></div>\
+      <div>signed in as <strong>{{name}}</strong> <a href="/disconnect">Sign out</a></div>\
     </div>',
     groups: '<div id="group-list">\
-      <h3>Select a one of your groups</h3>\
+      <h2>Find your community</h2>\
+      <h3>Select one of your Meetup groups</h3>\
       <div id="groups">\
         <ul>\
         {{#groups}}\
-         <li><a href="#{{slug}}" class="group">{{name}}</a></li>\
+         <li data-name="{{name}}"><a href="#{{slug}}" class="group">{{name}}</a></li>\
         {{/groups}}\
        </ul>\
       <div>\
     </div>',
-    groupPage: '<h2>{{name}}</h2>\
-      visit this group on <a href="{{link}}">meetup.com</a>\
-      <h3>Polls</h3>\
-      <div id="create"><a href="/polls/new" class="btn" id="create-poll">Create a new Poll<a></div>\
-    <div id="polls"/>',
-    pollForm: '<div><form id="new-poll">\
+    groupPage: '<h1>{{name}}</h1>\
+      visit this group on <a href="{{link}}" target="_blank">meetup.com</a>\
+      <h2>Community Polls</h2>\
+      <div id="create"><a href="/polls/new" class="btn" id="create-poll">Create a new Poll</a></div>\
+      <div id="polls"></div>',
+      noPolls: '<div><strong>:/</strong> This community is doesn\'t have any polls just yet. Be the <strong>first</strong> to spark on.</div>',
+    pollForm: '<div><form id="new-poll" action="#" method="POST">\
+      <h3>Get something out of your community</h3>\
       <input type="hidden" name="group-urlname" value="{{urlname}}">\
       <ul>\
-        <li><label for="name">What do you want to call this poll?</label><span><input name="name" type="text" /></span></li>\
-        <li><label for="starts">When will this start?</label><span><input type="text" name="ends" class="time" value="now" /></span></li>\
-        <li><label for="ends">When will this end?</label><span><input type="text" name="ends" class="time" value="later" /></span></li>\
-        <li><label for="explain">What are you asking?</label><span><textarea name="explain" /></span></li>\
+        <li>\
+          <label for="name">What do you want to call this poll?</label>\
+          <span><input name="name" type="text" /></span>\
+        </li>\
+        <li>\
+          <label for="starts">When will this start?</label>\
+          <span><input type="text" name="ends" class="time" value="now" /></span></li>\
+        <li>\
+          <label for="ends">When will this end?</label>\
+          <span><input type="text" name="ends" class="time" value="later" /></span>\
+        </li>\
+        <li>\
+         <label for="explain">What are you asking?</label>\
+         <span><textarea name="explain" /></span>\
+        </li>\
       </ul>\
       <a href="#add-option" id="add-option">Add an option</a>\
+      <div class="hint">you can always edit these later</div>\
+      <div><input type="submit" class="btn" value="Create this poll"/> or <a href="" id="cancel-new-poll">Maybe later</a></div>\
    </form></div>'
   }, render = function(view, data) {
       return Mustache.to_html(view, data);
@@ -55,14 +71,28 @@
             $("#content").html(render(Templates.groups, data.user));
         }, showGroup = function(group) {
             $("#content").html(render(Templates.groupPage, group));
-            //$.get("/polls.js", { group : group.urlname }, function(data) {
-            //  console.log(data);
-            //});
             $("#create-poll").click(function(e) {
               e.preventDefault();
               $("#create").html(render(Templates.pollForm, group));
-              return false;
+              $("#new-poll").live("submit", function(e) {
+                e.preventDefault();
+                // server call
+                return false;
+              });
+              $("#cancel-new-poll").live('click', function(e) {
+                e.preventDefault();
+                showGroup(group);
+                return false;
+              });
+              /*
+              $("#group-search").focus(function(e) {
+                $(this).val("");
+              }).live('keypress', function(e) {
+                 // filter names
+              });
+               */
             });
+            $("#polls").html(render(Templates.noPolls));
         };
 
         var slug = urlFragment()
