@@ -20,7 +20,7 @@
       <div id="groups">\
         <ul>\
         {{#groups}}\
-         <li data-name="{{name}}"><a href="#{{slug}}" class="group">{{name}}</a></li>\
+         <li data-name="{{name}}"><a href="#!/{{slug}}" class="group">{{name}}</a></li>\
         {{/groups}}\
        </ul>\
       <div>\
@@ -64,8 +64,8 @@
   }, render = function(view, data) {
       return Mustache.to_html(view, data);
   }, urlFragment = function() {
-      var parts = window.location.href.split("#");
-      if(parts.length > 1) { return parts[1]; }
+      var parts = window.location.href.split("#!/");
+      if(parts.length > 1) { return parts[1].split("/"); }
   };
 
   $.get("/user.json", function(data) {
@@ -81,6 +81,7 @@
         }, listGroups = function() {
             $("#content").html(render(Templates.groups, data.user));
         }, showGroup = function(group) {
+            console.log("showing group " + group);
             $("#content").html(render(Templates.groupPage, group));
 
             $("#create-poll").live('click', function(e) {
@@ -90,7 +91,7 @@
                 e.preventDefault();
                 $.post("/polls.json", $(this).serialize(), function(data) {
                   if(data.errors) {
-                    $("#errors").html(render(Templates.newPollErrors, data));
+                    $("#errors").fadeOut().html(render(Templates.newPollErrors, data)).fadeIn();
                   } else {
                     $("#errors").empty();
                     console.log(data);
@@ -134,9 +135,9 @@
 
         };
 
-        var slug = urlFragment()
-        if(slug) {
-          var group = findGroup(slug);
+        var frag = urlFragment()
+        if(frag) {
+          var group = findGroup(frag[0]);
           if(group) {
             showGroup(group);
           } else {
@@ -147,7 +148,7 @@
         }
 
         $(".group").live('click', function(e) {
-          var link = $(this), slug = link.attr("href").replace("#",""), group = findGroup(slug);
+          var link = $(this), slug = link.attr("href").replace("#!/",""), group = findGroup(slug);
           if(group) {
             showGroup(group);
           }
