@@ -5,6 +5,11 @@
     }
   });
 
+  $("body").live('resize', function() {
+      console.log('resize');
+      $('body').css('height', '100%');
+  });
+
   var Templates = {
     user : '<div>\
       <div>signed in as <strong>{{name}}</strong> <a href="/disconnect">Sign out</a></div>\
@@ -23,12 +28,16 @@
     groupPage: '<h1>{{name}}</h1>\
       visit this group on <a href="{{link}}" target="_blank">meetup.com</a>\
       <h2>Community Polls</h2>\
-      <div id="create"><a href="/polls/new" class="btn" id="create-poll">Create a new Poll</a></div>\
-      <div id="polls"></div>',
-      noPolls: '<div><strong>:/</strong> This community is doesn\'t have any polls just yet. Be the <strong>first</strong> to spark on.</div>',
+      <div id="create"><a href="#new_poll" class="btn" id="create-poll">Create a new Poll</a></div>\
+      <div id="feedback"></div>\
+     <ul id="polls"></ul>',
+    noPolls: '<li><div><strong>:/</strong> This community is doesn\'t have any polls just yet. Be the <strong>first</strong> to spark on.</div></li>',
+    polls: '{{#polls}}<li><a href="/polls/{{id}}">{{name}}</div></li>{{/polls}}',
+    newPoll: '<li><a href="/polls/{{id}}">{{name}}</div></li>',
     pollForm: '<div><form id="new-poll" action="#" method="POST">\
       <h3>Get something out of your community</h3>\
-      <input type="hidden" name="group-urlname" value="{{urlname}}">\
+      <input type="hidden" name="group-urlname" value="{{slug}}">\
+      <div id="errors"></div>\
       <ul id="fields">\
         <li>\
           <label for="name">What do you want to call this poll?</label>\
@@ -42,15 +51,16 @@
           <span><input type="text" name="ends" class="time" value="later" /></span>\
         </li>\
         <li>\
-         <label for="explain">What are you asking?</label>\
-         <span><textarea name="explain" /></span>\
+         <label for="description">What are you asking?</label>\
+         <span><textarea name="description" /></span>\
         </li>\
       </ul>\
-      <a href="#add-option" id="add-option">Add an option</a>\
+      <a href="#add-option" id="add-option">Add a choice</a>\
       <div class="hint">you can always edit these later</div>\
       <div><input type="submit" class="btn" value="Create this poll"/> or <a href="" id="cancel-new-poll">Maybe later</a></div>\
    </form></div>',
-      newOption: '<li><textarea class="option" name="option"/></li>'
+    newOption: '<li><textarea class="option" name="choice"/></li>',
+    newPollErrors: '<ul>{{#errors}}<li>{{.}}</li>{{/errors}}</ul>'
   }, render = function(view, data) {
       return Mustache.to_html(view, data);
   }, urlFragment = function() {
@@ -72,33 +82,56 @@
             $("#content").html(render(Templates.groups, data.user));
         }, showGroup = function(group) {
             $("#content").html(render(Templates.groupPage, group));
-            $("#create-poll").click(function(e) {
+
+            $("#create-poll").live('click', function(e) {
               e.preventDefault();
               $("#create").html(render(Templates.pollForm, group));
-              $("#new-poll").live("submit", function(e) {
+              $("#new-poll").submit(function(e) {
                 e.preventDefault();
-                // server call
+                $.post("/polls.json", $(this).serialize(), function(data) {
+                  if(data.errors) {
+                    $("#errors").html(render(Templates.newPollErrors, data));
+                  } else {
+                    $("#errors").empty();
+                    console.log(data);
+                      if(data.poll) {
+                        $("#create").fadeOut(function(){
+
+                          $("#polls").append(render(Templates.newPoll, data.poll));
+                          $("#feedback").hide().html("Created new Poll " + data.poll.name).fadeIn(function(){
+                              var self = $(this), done = function() {
+                                self.fadeOut(function() {
+                                     $("#create").html('<a href="#new_poll" class="btn" id="create-poll">Create a new Poll</a>').fadeIn();
+                                });
+                              };
+                              setTimeout(done, 2500);
+                          });
+                        });
+                      }
+                  }
+                }, "json");
                 return false;
               });
-              $("#cancel-new-poll").live('click', function(e) {
+              $("#cancel-new-poll").click(function(e) {
                 e.preventDefault();
                 showGroup(group);
                 return false;
               });
-              $("#add-option").live('click', function(e) {
+              $("#add-option").click(function(e) {
                  e.preventDefault();
                   $("#fields").append(Templates.newOption);
                  return false;
               });
-              /*
-              $("#group-search").focus(function(e) {
-                $(this).val("");
-              }).live('keypress', function(e) {
-                 // filter names
-              });
-               */
+
             });
-            $("#polls").html(render(Templates.noPolls));
+            $.get("/polls.json", { group : group.slug }, function(data){
+                if(data.polls) {
+                  $("#polls").html(render(Templates.polls, data));
+                } else {
+                  $("#polls").html(render(Templates.noPolls));
+                }
+            });
+
         };
 
         var slug = urlFragment()

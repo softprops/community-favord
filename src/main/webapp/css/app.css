@@ -13,6 +13,7 @@ body {
   background: -moz-linear-gradient(top,  #FFFEEE,  #ffffff);
 }
 
+
 body, input, textarea {
   color:#aaaaaa;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -106,6 +107,7 @@ input[type='text'], textarea {
   -moz-border-radius: 5px;
   border:5px solid #eee;
   padding:.25em;
+  width:100%;
 }
 
 #create {
@@ -138,4 +140,8 @@ input[type='text'], textarea {
 #polls {
   margin-top:1em;
   border-top:2px solid #ddd;
+}
+
+#errors {
+  color:#FC48BA;
 }

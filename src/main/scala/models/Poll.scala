@@ -9,9 +9,24 @@ import javax.jdo.annotations._
 class Poll() {
   @PrimaryKey
   @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-  var id: String = _
+  var id: com.google.appengine.api.datastore.Key = _
 
-  var groupId: Long = _
+  @Persistent
+  var name: String = _
 
-  var groupName: String = _
+  @Persistent
+  var content: String = _
+
+  @Persistent
+  var groupUrlname: String = _
+
+  /** meetup_id of creating user */
+  @Persistent
+  var creator: String = _
+
+  @Persistent
+  var maxVotes: Int = _
+
+  @Persistent
+  var choices: java.util.List[Choice] = _
 }

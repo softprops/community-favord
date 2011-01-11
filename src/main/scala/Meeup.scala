@@ -43,7 +43,46 @@ object Meetup {
     case _ => None
   }
 
-  def groups(memberId: String, token: Option[Token]): Option[List[MeetupGroup]] = token match {
+  def members(urlname: String, token: Option[Token]): Option[List[MeetupUser]] = token match {
+    case Some(tok) =>
+      val mu = OAuthClient(consumer, tok)
+      val (res, meta) = mu.call(Members.group_urlname(urlname))
+      val mems =
+        for {
+          g <- res
+          name <- Member.name(g)
+          id <- Member.id(g)
+          photo <- Member.photo_url(g)
+        } yield {
+           MeetupUser(id, name, if(photo.isEmpty) DEFAULT_USER_IMG else photo.replace("member_", "thumb_"))
+        }
+      Some(mems)
+    case _ => None
+  }
+
+  def groupByMemberAndUrl(memberId: String, urlname: String, token: Option[Token]): Option[MeetupGroup] = token match {
+    case Some(tok) =>
+      val mu = OAuthClient(consumer, tok)
+      val (res, _) = mu.call(Groups.member_id(memberId).urlname(urlname))
+      val gps =
+        for {
+          g <- res
+          id <- Group.id(g)
+          name <- Group.name(g)
+          slug <- Group.urlname(g)
+          photo <- Group.photo_url(g)
+          link <- Group.link(g)
+        } yield {
+           MeetupGroup(id, name, slug, photo, link)
+        }
+      gps match {
+        case List(g) => Some(g)
+        case _ => None
+      }
+    case _ => None
+  }
+
+  def groupsByMember(memberId: String, token: Option[Token]): Option[List[MeetupGroup]] = token match {
     case Some(tok) =>
       val mu = OAuthClient(consumer, tok)
       val (res, _) = mu.call(Groups.member_id(memberId))
